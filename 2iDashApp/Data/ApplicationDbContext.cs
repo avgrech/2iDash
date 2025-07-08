@@ -29,6 +29,10 @@ namespace _2iDashApp.Data
                 .WithOne(si => si.SystemModel)
                 .HasForeignKey(si => si.SystemModelId)
                 .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<Site>()
+                .Property(s => s.Environment)
+                .HasConversion<string>();
         }
     }
 }
