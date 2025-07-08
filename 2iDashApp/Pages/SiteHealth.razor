@@ -1,0 +1,78 @@
+@page "/site-health"
+
+<h3>Site Health</h3>
+
+@if (siteStatuses.Count == 0)
+{
+    <p>No sites configured.</p>
+}
+else
+{
+    <div class="row row-cols-1 row-cols-md-2 g-4">
+        @foreach (var status in siteStatuses)
+        {
+            <div class="col">
+                <div class="card text-white @(status.IsHealthy ? "bg-success" : "bg-danger")">
+                    <div class="card-body">
+                        <h5 class="card-title">@status.Site.Name</h5>
+                        <p class="card-text mb-1">
+                            <a href="@status.Site.Url" class="text-white text-decoration-underline">@status.Site.Url</a>
+                        </p>
+                        <p class="card-text mb-1">Environment: @status.Site.Environment</p>
+                        <p class="card-text mb-1">System: @status.Site.SystemModel?.Name</p>
+                        @if (!status.IsHealthy && status.Error != null)
+                        {
+                            <p class="card-text fw-bold">@status.Error</p>
+                        }
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+}
+
+@code {
+    private List<SiteStatus> siteStatuses = new();
+
+    [Inject] private ApplicationDbContext Db { get; set; } = default!;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var sites = await Db.Sites
+            .Include(s => s.SystemModel)
+            .ToListAsync();
+
+        using var http = new HttpClient();
+        foreach (var site in sites)
+        {
+            var status = new SiteStatus { Site = site };
+            try
+            {
+                var response = await http.GetAsync(site.HealthUrl);
+                if (response.IsSuccessStatusCode)
+                {
+                    status.IsHealthy = true;
+                }
+                else
+                {
+                    status.IsHealthy = false;
+                    status.Error = $"{(int)response.StatusCode} {response.ReasonPhrase}";
+                }
+            }
+            catch (Exception ex)
+            {
+                status.IsHealthy = false;
+                status.Error = ex.Message;
+            }
+
+            siteStatuses.Add(status);
+        }
+    }
+
+    private class SiteStatus
+    {
+        public Site Site { get; set; } = default!;
+        public bool IsHealthy { get; set; }
+        public string? Error { get; set; }
+    }
+}
