@@ -1,0 +1,77 @@
+@page "/sites"
+
+<h3>Create Site</h3>
+<div class="card-form">
+    <EditForm Model="@newSite" OnValidSubmit="@CreateSite">
+        <DataAnnotationsValidator />
+        <ValidationSummary />
+        <div class="mb-3">
+            <label class="form-label">Url</label>
+            <InputText class="form-control" @bind-Value="newSite.Url" />
+        </div>
+        <div class="mb-3">
+            <label class="form-label">Health Url</label>
+            <InputText class="form-control" @bind-Value="newSite.HealthUrl" />
+        </div>
+        <div class="mb-3">
+            <label class="form-label">Environment</label>
+            <InputSelect class="form-select" @bind-Value="newSite.Environment">
+                @foreach (SiteEnvironment env in Enum.GetValues(typeof(SiteEnvironment)))
+                {
+                    <option value="@env">@env</option>
+                }
+            </InputSelect>
+        </div>
+        <div class="mb-3">
+            <label class="form-label">System</label>
+            <InputSelect class="form-select" @bind-Value="newSite.SystemModelId">
+                <option value="">-- Select --</option>
+                @foreach (var sys in systems)
+                {
+                    <option value="@sys.Id">@sys.Name</option>
+                }
+            </InputSelect>
+        </div>
+        <button class="btn btn-primary" type="submit">Create</button>
+    </EditForm>
+</div>
+
+<h3 class="mt-4">Existing Sites</h3>
+@if (sites.Count == 0)
+{
+    <p>No sites created.</p>
+}
+else
+{
+    <ul class="list-group">
+        @foreach (var site in sites)
+        {
+            <li class="list-group-item">
+                <div><strong>@site.Url</strong> (@site.Environment) - @site.SystemModel?.Name</div>
+            </li>
+        }
+    </ul>
+}
+
+@code {
+    private Site newSite = new();
+    private List<Site> sites = new();
+    private List<SystemModel> systems = new();
+
+    [Inject] private ApplicationDbContext Db { get; set; } = default!;
+
+    protected override async Task OnInitializedAsync()
+    {
+        systems = await Db.Systems.ToListAsync();
+        sites = await Db.Sites.Include(s => s.SystemModel).ToListAsync();
+    }
+
+    private async Task CreateSite()
+    {
+        Db.Sites.Add(newSite);
+        await Db.SaveChangesAsync();
+        Db.Entry(newSite).Reference(s => s.SystemModel).Load();
+        sites.Add(newSite);
+        newSite = new Site();
+    }
+}
