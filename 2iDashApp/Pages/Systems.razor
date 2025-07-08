@@ -33,13 +33,50 @@ else
     <ul class="list-group">
         @foreach (var sys in systems)
         {
-            <li class="list-group-item">@sys.Name - @sys.Organisation?.Name</li>
+            <li class="list-group-item">
+                @if (editSystem != null && editSystem.Id == sys.Id)
+                {
+                    <EditForm Model="@editSystem" OnValidSubmit="UpdateSystem">
+                        <DataAnnotationsValidator />
+                        <ValidationSummary />
+                        <div class="row g-2">
+                            <div class="col">
+                                <InputText class="form-control" @bind-Value="editSystem.Name" />
+                            </div>
+                            <div class="col">
+                                <InputSelect class="form-select" @bind-Value="editSystem.OrganisationId">
+                                    <option value="">-- Select --</option>
+                                    @foreach (var org in organisations)
+                                    {
+                                        <option value="@org.Id">@org.Name</option>
+                                    }
+                                </InputSelect>
+                            </div>
+                            <div class="col-auto">
+                                <button class="btn btn-primary" type="submit">Save</button>
+                                <button class="btn btn-secondary ms-1" type="button" @onclick="CancelEdit">Cancel</button>
+                            </div>
+                        </div>
+                    </EditForm>
+                }
+                else
+                {
+                    <div class="d-flex justify-content-between align-items-center">
+                        <span>@sys.Name - @sys.Organisation?.Name</span>
+                        <span>
+                            <button class="btn btn-sm btn-secondary me-1" @onclick="() => StartEdit(sys)">Edit</button>
+                            <button class="btn btn-sm btn-danger" @onclick="() => DeleteSystem(sys)">Delete</button>
+                        </span>
+                    </div>
+                }
+            </li>
         }
     </ul>
 }
 
 @code {
     private SystemModel newSystem = new();
+    private SystemModel? editSystem;
     private List<SystemModel> systems = new();
     private List<Organisation> organisations = new();
 
@@ -58,5 +95,48 @@ else
         Db.Entry(newSystem).Reference(s => s.Organisation).Load();
         systems.Add(newSystem);
         newSystem = new SystemModel();
+    }
+
+    private void StartEdit(SystemModel sys)
+    {
+        editSystem = new SystemModel
+        {
+            Id = sys.Id,
+            Name = sys.Name,
+            OrganisationId = sys.OrganisationId
+        };
+    }
+
+    private void CancelEdit()
+    {
+        editSystem = null;
+    }
+
+    private async Task UpdateSystem()
+    {
+        if (editSystem is null)
+            return;
+
+        var sys = await Db.Systems.FindAsync(editSystem.Id);
+        if (sys != null)
+        {
+            sys.Name = editSystem.Name;
+            sys.OrganisationId = editSystem.OrganisationId;
+            await Db.SaveChangesAsync();
+            Db.Entry(sys).Reference(s => s.Organisation).Load();
+            var index = systems.FindIndex(s => s.Id == sys.Id);
+            if (index != -1)
+            {
+                systems[index] = sys;
+            }
+        }
+        editSystem = null;
+    }
+
+    private async Task DeleteSystem(SystemModel sys)
+    {
+        Db.Systems.Remove(sys);
+        await Db.SaveChangesAsync();
+        systems.Remove(sys);
     }
 }

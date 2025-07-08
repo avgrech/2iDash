@@ -51,7 +51,55 @@ else
         @foreach (var site in sites)
         {
             <li class="list-group-item">
-                <div><strong>@site.Name</strong> - @site.Url (@site.Environment) - @site.SystemModel?.Name</div>
+                @if (editSite != null && editSite.Id == site.Id)
+                {
+                    <EditForm Model="@editSite" OnValidSubmit="UpdateSite">
+                        <DataAnnotationsValidator />
+                        <ValidationSummary />
+                        <div class="row g-2">
+                            <div class="col-2">
+                                <InputText class="form-control" @bind-Value="editSite.Name" />
+                            </div>
+                            <div class="col-3">
+                                <InputText class="form-control" @bind-Value="editSite.Url" />
+                            </div>
+                            <div class="col-3">
+                                <InputText class="form-control" @bind-Value="editSite.HealthUrl" />
+                            </div>
+                            <div class="col-2">
+                                <InputSelect class="form-select" @bind-Value="editSite.Environment">
+                                    @foreach (SiteEnvironment env in Enum.GetValues(typeof(SiteEnvironment)))
+                                    {
+                                        <option value="@env">@env</option>
+                                    }
+                                </InputSelect>
+                            </div>
+                            <div class="col-2">
+                                <InputSelect class="form-select" @bind-Value="editSite.SystemModelId">
+                                    <option value="">-- Select --</option>
+                                    @foreach (var sys in systems)
+                                    {
+                                        <option value="@sys.Id">@sys.Name</option>
+                                    }
+                                </InputSelect>
+                            </div>
+                            <div class="col-auto">
+                                <button class="btn btn-primary" type="submit">Save</button>
+                                <button class="btn btn-secondary ms-1" type="button" @onclick="CancelEdit">Cancel</button>
+                            </div>
+                        </div>
+                    </EditForm>
+                }
+                else
+                {
+                    <div class="d-flex justify-content-between align-items-center">
+                        <span><strong>@site.Name</strong> - @site.Url (@site.Environment) - @site.SystemModel?.Name</span>
+                        <span>
+                            <button class="btn btn-sm btn-secondary me-1" @onclick="() => StartEdit(site)">Edit</button>
+                            <button class="btn btn-sm btn-danger" @onclick="() => DeleteSite(site)">Delete</button>
+                        </span>
+                    </div>
+                }
             </li>
         }
     </ul>
@@ -59,6 +107,7 @@ else
 
 @code {
     private Site newSite = new();
+    private Site? editSite;
     private List<Site> sites = new();
     private List<SystemModel> systems = new();
 
@@ -77,5 +126,54 @@ else
         Db.Entry(newSite).Reference(s => s.SystemModel).Load();
         sites.Add(newSite);
         newSite = new Site();
+    }
+
+    private void StartEdit(Site site)
+    {
+        editSite = new Site
+        {
+            Id = site.Id,
+            Name = site.Name,
+            Url = site.Url,
+            HealthUrl = site.HealthUrl,
+            Environment = site.Environment,
+            SystemModelId = site.SystemModelId
+        };
+    }
+
+    private void CancelEdit()
+    {
+        editSite = null;
+    }
+
+    private async Task UpdateSite()
+    {
+        if (editSite is null)
+            return;
+
+        var site = await Db.Sites.FindAsync(editSite.Id);
+        if (site != null)
+        {
+            site.Name = editSite.Name;
+            site.Url = editSite.Url;
+            site.HealthUrl = editSite.HealthUrl;
+            site.Environment = editSite.Environment;
+            site.SystemModelId = editSite.SystemModelId;
+            await Db.SaveChangesAsync();
+            Db.Entry(site).Reference(s => s.SystemModel).Load();
+            var index = sites.FindIndex(s => s.Id == site.Id);
+            if (index != -1)
+            {
+                sites[index] = site;
+            }
+        }
+        editSite = null;
+    }
+
+    private async Task DeleteSite(Site site)
+    {
+        Db.Sites.Remove(site);
+        await Db.SaveChangesAsync();
+        sites.Remove(site);
     }
 }
