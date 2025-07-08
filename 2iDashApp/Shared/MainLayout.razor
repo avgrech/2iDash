@@ -1,8 +1,10 @@
 @inherits LayoutComponentBase
 
-<NavMenu />
-<div class="container">
-    <div class="content px-4">
-        @Body
+<div class="d-flex">
+    <NavMenu />
+    <div class="flex-fill">
+        <div class="content p-4">
+            @Body
+        </div>
     </div>
 </div>
