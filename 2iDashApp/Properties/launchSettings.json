@@ -1,0 +1,12 @@
+{
+  "profiles": {
+    "2iDashApp": {
+      "commandName": "Project",
+      "launchBrowser": true,
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development"
+      },
+      "applicationUrl": "https://localhost:41873;http://localhost:41874"
+    }
+  }
+}
