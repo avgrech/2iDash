@@ -12,7 +12,7 @@ else
         @foreach (var organisation in organisations)
         {
             <div class="col">
-                <div class="card">
+                <div class="card organisation-card">
                     <div class="card-body">
                         <h5 class="card-title">@organisation.Name</h5>
 
@@ -26,7 +26,7 @@ else
                                 @foreach (var system in organisation.Systems)
                                 {
                                     <div class="col">
-                                        <div class="card">
+                                        <div class="card system-card">
                                             <div class="card-body">
                                                 <h6 class="card-subtitle mb-2">@system.Name</h6>
 
@@ -40,7 +40,7 @@ else
                                                         @foreach (var site in system.Sites)
                                                         {
                                                             <div class="col">
-                                                                <div class="card">
+                                                                <div class="card site-card">
                                                                     <div class="card-body">
                                                                         <a href="@site.Url" class="card-link">@site.Url</a>
                                                                         <div class="small text-muted">@site.Environment</div>
