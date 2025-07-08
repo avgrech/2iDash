@@ -1,5 +1,79 @@
 @page "/"
 
-<h1>Hello, world!</h1>
+<h3>Organisations</h3>
 
-Welcome to your new app.
+@if (organisations.Count == 0)
+{
+    <p>No organisations found.</p>
+}
+else
+{
+    <div class="row row-cols-1 g-4">
+        @foreach (var organisation in organisations)
+        {
+            <div class="col">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">@organisation.Name</h5>
+
+                        @if (organisation.Systems.Count == 0)
+                        {
+                            <p class="mb-0">No systems.</p>
+                        }
+                        else
+                        {
+                            <div class="row row-cols-1 g-3">
+                                @foreach (var system in organisation.Systems)
+                                {
+                                    <div class="col">
+                                        <div class="card">
+                                            <div class="card-body">
+                                                <h6 class="card-subtitle mb-2">@system.Name</h6>
+
+                                                @if (system.Sites.Count == 0)
+                                                {
+                                                    <p class="mb-0">No sites.</p>
+                                                }
+                                                else
+                                                {
+                                                    <div class="row row-cols-1 g-2">
+                                                        @foreach (var site in system.Sites)
+                                                        {
+                                                            <div class="col">
+                                                                <div class="card">
+                                                                    <div class="card-body">
+                                                                        <a href="@site.Url" class="card-link">@site.Url</a>
+                                                                        <div class="small text-muted">@site.Environment</div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        }
+                                                    </div>
+                                                }
+                                            </div>
+                                        </div>
+                                    </div>
+                                }
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+}
+
+@code {
+    private List<Organisation> organisations = new();
+
+    [Inject]
+    private ApplicationDbContext Db { get; set; } = default!;
+
+    protected override async Task OnInitializedAsync()
+    {
+        organisations = await Db.Organisations
+            .Include(o => o.Systems)
+                .ThenInclude(s => s.Sites)
+            .ToListAsync();
+    }
+}
