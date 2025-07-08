@@ -33,3 +33,21 @@ body {
 .brand-text {
     text-transform: capitalize;
 }
+
+/* Card styling */
+.card {
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.08);
+    border: none;
+}
+
+.organisation-card {
+    background-color: #e8f0fe;
+}
+
+.system-card {
+    background-color: #e7f7eb;
+}
+
+.site-card {
+    background-color: #fff7e8;
+}
