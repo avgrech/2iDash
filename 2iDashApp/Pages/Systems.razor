@@ -1,0 +1,62 @@
+@page "/systems"
+
+<h3>Create System</h3>
+<div class="card-form">
+    <EditForm Model="@newSystem" OnValidSubmit="@CreateSystem">
+        <DataAnnotationsValidator />
+        <ValidationSummary />
+        <div class="mb-3">
+            <label class="form-label">Name</label>
+            <InputText class="form-control" @bind-Value="newSystem.Name" />
+        </div>
+        <div class="mb-3">
+            <label class="form-label">Organisation</label>
+            <InputSelect class="form-select" @bind-Value="newSystem.OrganisationId">
+                <option value="">-- Select --</option>
+                @foreach (var org in organisations)
+                {
+                    <option value="@org.Id">@org.Name</option>
+                }
+            </InputSelect>
+        </div>
+        <button class="btn btn-primary" type="submit">Create</button>
+    </EditForm>
+</div>
+
+<h3 class="mt-4">Existing Systems</h3>
+@if (systems.Count == 0)
+{
+    <p>No systems created.</p>
+}
+else
+{
+    <ul class="list-group">
+        @foreach (var sys in systems)
+        {
+            <li class="list-group-item">@sys.Name - @sys.Organisation?.Name</li>
+        }
+    </ul>
+}
+
+@code {
+    private SystemModel newSystem = new();
+    private List<SystemModel> systems = new();
+    private List<Organisation> organisations = new();
+
+    [Inject] private ApplicationDbContext Db { get; set; } = default!;
+
+    protected override async Task OnInitializedAsync()
+    {
+        organisations = await Db.Organisations.ToListAsync();
+        systems = await Db.Systems.Include(s => s.Organisation).ToListAsync();
+    }
+
+    private async Task CreateSystem()
+    {
+        Db.Systems.Add(newSystem);
+        await Db.SaveChangesAsync();
+        Db.Entry(newSystem).Reference(s => s.Organisation).Load();
+        systems.Add(newSystem);
+        newSystem = new SystemModel();
+    }
+}
