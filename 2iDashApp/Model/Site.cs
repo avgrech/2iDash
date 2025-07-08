@@ -15,6 +15,9 @@ namespace _2iDashApp.Model
         public int Id { get; set; }
 
         [Required]
+        public string Name { get; set; } = string.Empty;
+
+        [Required]
         [Url]
         public string Url { get; set; } = string.Empty;
 
