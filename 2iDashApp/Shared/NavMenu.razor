@@ -35,6 +35,22 @@
                         <p>Site Health</p>
                     </NavLink>
                 </li>
+                <li class="nav-item">
+                    <AuthorizeView>
+                        <Authorized>
+                            <a class="nav-link" href="logout">
+                                <i class="nav-icon fas fa-sign-out-alt"></i>
+                                <p>Logout</p>
+                            </a>
+                        </Authorized>
+                        <NotAuthorized>
+                            <a class="nav-link" href="login">
+                                <i class="nav-icon fas fa-sign-in-alt"></i>
+                                <p>Login</p>
+                            </a>
+                        </NotAuthorized>
+                    </AuthorizeView>
+                </li>
             </ul>
         </nav>
     </div>
