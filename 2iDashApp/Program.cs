@@ -27,7 +27,9 @@ builder.Services.AddAuthentication(options =>
     {
         options.LoginPath = "/login";
         options.Cookie.SameSite = SameSiteMode.None;
-        options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+        // Allow the cookie to be written over HTTP in development
+        // so the login loop does not occur when HTTPS is unavailable.
+        options.Cookie.SecurePolicy = CookieSecurePolicy.SameAsRequest;
         options.Events.OnValidatePrincipal = async ctx =>
         {
             var email = ctx.Principal?.FindFirstValue(ClaimTypes.Email);
