@@ -8,11 +8,11 @@
 }
 else
 {
-    <div class="row row-cols-1 row-cols-md-2 g-4">
+    <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-4">
         @foreach (var status in siteStatuses)
         {
             <div class="col">
-                <div class="card col-4 text-white  @(status.IsHealthy ? "bg-success" : "bg-danger")">
+                <div class="card text-white @(status.IsHealthy ? "bg-success" : "flash-red")">
                     <div class="card-body">
                         <h5 class="card-title">@status.Site.Name</h5>
                         <p class="card-text mb-1">
@@ -67,6 +67,10 @@ else
 
             siteStatuses.Add(status);
         }
+
+        siteStatuses = siteStatuses
+            .OrderBy(s => s.IsHealthy)
+            .ToList();
     }
 
     private class SiteStatus

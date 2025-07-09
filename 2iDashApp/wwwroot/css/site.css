@@ -58,3 +58,13 @@ body {
     color: white;
     margin-top: 2px;
 }
+
+@keyframes flash-red {
+    0% { background-color: #dc3545; }
+    50% { background-color: #ff6b6b; }
+    100% { background-color: #dc3545; }
+}
+
+.flash-red {
+    background-color: #dc3545;
+    animation: flash-red 1s linear infinite;}
