@@ -8,6 +8,8 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.Google;
 using Microsoft.AspNetCore.Authentication;
 using System.Security.Claims;
+using System;
+using System.Threading.Tasks;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -20,7 +22,19 @@ builder.Services.AddAuthentication(options =>
     options.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
     options.DefaultChallengeScheme = GoogleDefaults.AuthenticationScheme;
 })
-    .AddCookie()
+    .AddCookie(options =>
+    {
+        options.LoginPath = "/login";
+        options.Events.OnValidatePrincipal = async ctx =>
+        {
+            var email = ctx.Principal?.FindFirstValue(ClaimTypes.Email);
+            if (string.IsNullOrEmpty(email) || !email.EndsWith("@2iltd.com", StringComparison.OrdinalIgnoreCase))
+            {
+                ctx.RejectPrincipal();
+                await ctx.HttpContext.SignOutAsync();
+            }
+        };
+    })
     .AddGoogle(options =>
     {
         options.ClientId = builder.Configuration["Authentication:Google:ClientId"] ?? string.Empty;
