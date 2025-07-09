@@ -1,6 +1,11 @@
 @page "/site-health"
 
 <h3>Site Health</h3>
+<div class="mb-3">
+    <label class="form-label">Refresh Interval (seconds)</label>
+    <InputNumber class="form-control d-inline w-auto" @bind-Value="refreshInterval" />
+    <button class="btn btn-sm btn-secondary ms-2" @onclick="RestartTimer">Apply</button>
+</div>
 
 @if (siteStatuses.Count == 0)
 {
@@ -31,13 +36,26 @@ else
     </div>
 }
 
+@implements IDisposable
+
 @code {
     private List<SiteStatus> siteStatuses = new();
+    private PeriodicTimer? timer;
+    private CancellationTokenSource cts = new();
+    private int refreshInterval = 5;
 
     [Inject] private ApplicationDbContext Db { get; set; } = default!;
 
     protected override async Task OnInitializedAsync()
     {
+        await LoadStatuses();
+        RestartTimer();
+    }
+
+    private async Task LoadStatuses()
+    {
+        siteStatuses.Clear();
+
         var sites = await Db.Sites
             .Include(s => s.SystemModel)
             .ToListAsync();
@@ -71,6 +89,41 @@ else
         siteStatuses = siteStatuses
             .OrderBy(s => s.IsHealthy)
             .ToList();
+    }
+
+    private async Task RefreshLoopAsync()
+    {
+        if (timer is null)
+            return;
+
+        try
+        {
+            while (await timer.WaitForNextTickAsync(cts.Token))
+            {
+                await LoadStatuses();
+                StateHasChanged();
+            }
+        }
+        catch (OperationCanceledException)
+        {
+        }
+    }
+
+    private void RestartTimer()
+    {
+        cts.Cancel();
+        cts.Dispose();
+        cts = new CancellationTokenSource();
+
+        timer = new PeriodicTimer(TimeSpan.FromSeconds(refreshInterval));
+        _ = RefreshLoopAsync();
+    }
+
+    public void Dispose()
+    {
+        cts.Cancel();
+        timer?.Dispose();
+        cts.Dispose();
     }
 
     private class SiteStatus
