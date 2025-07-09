@@ -1,0 +1,12 @@
+{
+  "profiles": {
+    "DashApi": {
+      "commandName": "Project",
+      "launchBrowser": true,
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development"
+      },
+      "applicationUrl": "https://localhost:28147;http://localhost:28148"
+    }
+  }
+}
