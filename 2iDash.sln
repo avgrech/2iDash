@@ -5,6 +5,8 @@ VisualStudioVersion = 17.0.31903.59
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "2iDashApp", "2iDashApp/2iDashApp.csproj", "{6E82C669-A127-4D1D-B94A-90F169B0689C}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DashApi", "DashApi/DashApi.csproj", "{7EC52017-8C1B-4A70-AF29-45EC5FD5C75C}"
+EndProject
 Global
 GlobalSection(SolutionConfigurationPlatforms) = preSolution
 Debug|Any CPU = Debug|Any CPU
@@ -15,6 +17,10 @@ GlobalSection(ProjectConfigurationPlatforms) = postSolution
 {6E82C669-A127-4D1D-B94A-90F169B0689C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 {6E82C669-A127-4D1D-B94A-90F169B0689C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 {6E82C669-A127-4D1D-B94A-90F169B0689C}.Release|Any CPU.Build.0 = Release|Any CPU
+{7EC52017-8C1B-4A70-AF29-45EC5FD5C75C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+{7EC52017-8C1B-4A70-AF29-45EC5FD5C75C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+{7EC52017-8C1B-4A70-AF29-45EC5FD5C75C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+{7EC52017-8C1B-4A70-AF29-45EC5FD5C75C}.Release|Any CPU.Build.0 = Release|Any CPU
 EndGlobalSection
 EndGlobal
 

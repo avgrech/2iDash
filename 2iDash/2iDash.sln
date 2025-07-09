@@ -5,17 +5,23 @@ VisualStudioVersion = 17.13.35931.197 d17.13
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "2iDashApp", "..\2iDashApp\2iDashApp.csproj", "{CDE7E60D-4B98-8CB6-A1AC-38EC98D682D2}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DashApi", "..\DashApi\DashApi.csproj", "{D5561D9F-F3A1-41FA-B12C-4E3310DE4ABD}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
-	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{CDE7E60D-4B98-8CB6-A1AC-38EC98D682D2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{CDE7E60D-4B98-8CB6-A1AC-38EC98D682D2}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{CDE7E60D-4B98-8CB6-A1AC-38EC98D682D2}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{CDE7E60D-4B98-8CB6-A1AC-38EC98D682D2}.Release|Any CPU.Build.0 = Release|Any CPU
-	EndGlobalSection
+        GlobalSection(ProjectConfigurationPlatforms) = postSolution
+                {CDE7E60D-4B98-8CB6-A1AC-38EC98D682D2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+                {CDE7E60D-4B98-8CB6-A1AC-38EC98D682D2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+                {CDE7E60D-4B98-8CB6-A1AC-38EC98D682D2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+                {CDE7E60D-4B98-8CB6-A1AC-38EC98D682D2}.Release|Any CPU.Build.0 = Release|Any CPU
+                {D5561D9F-F3A1-41FA-B12C-4E3310DE4ABD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+                {D5561D9F-F3A1-41FA-B12C-4E3310DE4ABD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+                {D5561D9F-F3A1-41FA-B12C-4E3310DE4ABD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+                {D5561D9F-F3A1-41FA-B12C-4E3310DE4ABD}.Release|Any CPU.Build.0 = Release|Any CPU
+        EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
