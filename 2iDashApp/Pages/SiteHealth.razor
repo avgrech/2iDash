@@ -17,9 +17,16 @@ else
         @foreach (var status in siteStatuses)
         {
             <div class="col">
-                <div class="card text-white @(status.IsHealthy ? "bg-success" : "flash-red")">
+                <div class="card text-white @(status.IsHealthy ? "bg-success" : status.Snoozed ? "bg-danger" : "flash-red")">
                     <div class="card-body">
-                        <h5 class="card-title">@status.Site.Name</h5>
+                        <h5 class="card-title">@status.Site.Name
+                            @if (!status.IsHealthy)
+                            {
+                                <button class="btn btn-sm btn-light float-end" @onclick="() => ToggleSnooze(status)">
+                                    @(status.Snoozed ? "Unsnooze" : "Snooze")
+                                </button>
+                            }
+                        </h5>
                         <p class="card-text mb-1">
                             <a href="@status.Site.Url" class="text-white text-decoration-underline">@status.Site.Url</a>
                         </p>
@@ -40,6 +47,7 @@ else
 
 @code {
     private List<SiteStatus> siteStatuses = new();
+    private HashSet<int> snoozedSites = new();
     private PeriodicTimer? timer;
     private CancellationTokenSource cts = new();
     private int refreshInterval = 5;
@@ -63,7 +71,7 @@ else
         using var http = new HttpClient();
         foreach (var site in sites)
         {
-            var status = new SiteStatus { Site = site };
+            var status = new SiteStatus { Site = site, Snoozed = snoozedSites.Contains(site.Id) };
             try
             {
                 var response = await http.GetAsync(site.HealthUrl);
@@ -87,7 +95,7 @@ else
         }
 
         siteStatuses = siteStatuses
-            .OrderBy(s => s.IsHealthy)
+            .OrderBy(s => s.Snoozed ? 2 : (s.IsHealthy ? 1 : 0))
             .ToList();
     }
 
@@ -119,6 +127,19 @@ else
         _ = RefreshLoopAsync();
     }
 
+    private void ToggleSnooze(SiteStatus status)
+    {
+        status.Snoozed = !status.Snoozed;
+        if (status.Snoozed)
+            snoozedSites.Add(status.Site.Id);
+        else
+            snoozedSites.Remove(status.Site.Id);
+
+        siteStatuses = siteStatuses
+            .OrderBy(s => s.Snoozed ? 2 : (s.IsHealthy ? 1 : 0))
+            .ToList();
+    }
+
     public void Dispose()
     {
         cts.Cancel();
@@ -131,5 +152,7 @@ else
         public Site Site { get; set; } = default!;
         public bool IsHealthy { get; set; }
         public string? Error { get; set; }
+        public bool Snoozed { get; set; }
     }
 }
+
