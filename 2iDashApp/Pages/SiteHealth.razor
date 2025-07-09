@@ -12,7 +12,7 @@ else
         @foreach (var status in siteStatuses)
         {
             <div class="col">
-                <div class="card text-white @(status.IsHealthy ? "bg-success" : "bg-danger")">
+                <div class="card col-4 text-white  @(status.IsHealthy ? "bg-success" : "bg-danger")">
                     <div class="card-body">
                         <h5 class="card-title">@status.Site.Name</h5>
                         <p class="card-text mb-1">

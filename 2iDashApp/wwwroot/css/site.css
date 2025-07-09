@@ -26,8 +26,8 @@ body {
 }
 
 .main-sidebar {
-    width: 250px;
-    background-color: #003366;
+    width: 150px;
+    background-color: #5b8dbf;
 }
 
 .brand-text {
@@ -50,4 +50,11 @@ body {
 
 .site-card {
     background-color: #fff7e8;
+}
+
+.nav-pills .nav-link {
+    border-radius: var(--bs-nav-pills-border-radius);
+    background: #0033a5;
+    color: white;
+    margin-top: 2px;
 }
