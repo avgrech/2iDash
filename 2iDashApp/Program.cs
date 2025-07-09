@@ -4,12 +4,39 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.EntityFrameworkCore;
 using _2iDashApp.Data;
 using Microsoft.Extensions.Configuration;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication.Google;
+using Microsoft.AspNetCore.Authentication;
+using System.Security.Claims;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
+
+builder.Services.AddAuthentication(options =>
+{
+    options.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+    options.DefaultChallengeScheme = GoogleDefaults.AuthenticationScheme;
+})
+    .AddCookie()
+    .AddGoogle(options =>
+    {
+        options.ClientId = builder.Configuration["Authentication:Google:ClientId"] ?? string.Empty;
+        options.ClientSecret = builder.Configuration["Authentication:Google:ClientSecret"] ?? string.Empty;
+        options.Events.OnCreatingTicket = ctx =>
+        {
+            var email = ctx.Principal?.FindFirstValue(ClaimTypes.Email);
+            if (email is null || !email.EndsWith("@2iltd.com", StringComparison.OrdinalIgnoreCase))
+            {
+                ctx.Fail("Only 2iltd.com accounts are allowed");
+            }
+            return Task.CompletedTask;
+        };
+    });
+
+builder.Services.AddAuthorization();
 
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
@@ -28,7 +55,27 @@ app.UseStaticFiles();
 
 app.UseRouting();
 
+app.UseAuthentication();
+app.UseAuthorization();
+
 app.MapBlazorHub();
+app.MapGet("/login", async context =>
+{
+    if (!context.User.Identity?.IsAuthenticated ?? true)
+    {
+        await context.ChallengeAsync(GoogleDefaults.AuthenticationScheme, new AuthenticationProperties { RedirectUri = "/" });
+    }
+    else
+    {
+        context.Response.Redirect("/");
+    }
+});
+
+app.MapGet("/logout", async context =>
+{
+    await context.SignOutAsync();
+    context.Response.Redirect("/");
+});
 app.MapFallbackToPage("/_Host");
 
 app.Run();
