@@ -27,7 +27,7 @@ body {
 
 .main-sidebar {
     width: 150px;
-    background-color: #5b8dbf;
+    background-color: rgb(0 36 73);
 }
 
 .brand-text {
@@ -54,9 +54,11 @@ body {
 
 .nav-pills .nav-link {
     border-radius: var(--bs-nav-pills-border-radius);
-    background: #0033a5;
+    background: #13295b;
     color: white;
-    margin-top: 2px;
+    margin-top: 10px;
+    -webkit-box-shadow: 0px 6px 6px 0px rgba(0,0,0,0.67);
+    box-shadow: 0px 6px 6px 0px rgba(0,0,0,0.67);
 }
 
 @keyframes flash-red {
