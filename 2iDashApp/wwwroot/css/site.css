@@ -69,4 +69,12 @@ body {
 
 .flash-red {
     background-color: #dc3545;
-    animation: flash-red 1s linear infinite;}
+    animation: flash-red 1s linear infinite;
+}
+
+.top-bar {
+    background-color: rgb(0 36 73);
+    color: #fff;
+    padding: 0.5rem 1rem;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
