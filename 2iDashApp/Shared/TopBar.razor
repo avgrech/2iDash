@@ -1,0 +1,7 @@
+<AuthorizeView>
+    <Authorized Context="auth">
+        <div class="top-bar text-end">
+            Logged in as @auth.User.FindFirst(System.Security.Claims.ClaimTypes.Email)?.Value
+        </div>
+    </Authorized>
+</AuthorizeView>
